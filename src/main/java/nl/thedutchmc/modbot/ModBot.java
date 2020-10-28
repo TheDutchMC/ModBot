@@ -1,0 +1,67 @@
+package nl.thedutchmc.modbot;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
+import javax.security.auth.login.LoginException;
+
+import nl.thedutchmc.modbot.guildConfig.GuildConfig;
+
+public class ModBot {
+
+	public static void main(String[] args) {
+		
+		logInfo("Starting ModBot...");
+		logInfo("Reading Configuration File...");
+		
+		ConfigurationHandler config = new ConfigurationHandler();
+		try {
+			config.load();
+		} catch (IOException e) {
+			logWarn("Unable to read the configuration file due to an IOException.");
+		} catch (URISyntaxException e) {
+			logWarn("Unable to read the configuration file due to an URISyntaxException");
+		}
+		
+		logInfo("Reading complete.");
+		logInfo("Reading Guild Config folder...");
+		
+		GuildConfig gc = new GuildConfig();
+		try {
+			gc.load();
+		} catch (IOException e) {
+			logWarn("Unable to read the Guild Configuration files due to an IOException.");
+		} catch (URISyntaxException e) {
+			logWarn("Unable to read the Guild Configuration files due to an URISyntaxException");
+		}
+		
+		logInfo("Reading complete.");
+		logInfo("Starting JDA...");
+		
+		JdaHandler jda = new JdaHandler();
+		try {
+			jda.load();
+		} catch(LoginException e) {
+			logWarn("Unable to login to Discord. Your token is likely invalid");
+		}
+		
+		logInfo("JDA started.");
+		
+	}
+	
+	public static void logInfo(Object log) {
+		final DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
+		System.out.println("[" + LocalTime.now(ZoneId.systemDefault()).format(f) + "][INFO] " + log);
+	}
+	
+	public static void logWarn(Object log) {
+		final DateTimeFormatter f = DateTimeFormatter.ofPattern("HH:mm:ss");
+		System.err.println("[" + LocalTime.now(ZoneId.systemDefault()).format(f) + "][WARN] " + log);
+	}
+	
+	
+	
+}

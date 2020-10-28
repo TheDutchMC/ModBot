@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'application'
+	id 'eclipse'
+    id "com.github.johnrengelman.shadow" version "6.1.0"
+}
+
+repositories {
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:28.0-jre'
+	
+	compile ('net.dv8tion:JDA:4.2.0_209') {
+        exclude module: 'opus-java'
+    }
+    
+    compile group: 'org.json', name: 'json', version: '20200518'
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'nl.thedutchmc.modbot.ModBot'
+}
