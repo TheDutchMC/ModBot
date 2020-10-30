@@ -156,7 +156,11 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			EnumSet<Permission> read = EnumSet.of(Permission.VIEW_CHANNEL);
 			
 			//Set the permissions for the channel
-			logChannel.createPermissionOverride(moderatorRole).setAllow(read).queue();
+			//First we need to check if doesn't already exist,
+			//if it doesnt, we add it.
+			if(logChannel.getPermissionOverride(moderatorRole) == null) { 
+				logChannel.createPermissionOverride(moderatorRole).setAllow(read).queue();
+			}
 			
 			//Inform the user of the change.
 			information.getChannel().sendMessage("The role " + moderatorRole.getAsMention() + " is now configured as the Moderator role!").queue();

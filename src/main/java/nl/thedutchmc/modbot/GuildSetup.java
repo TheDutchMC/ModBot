@@ -89,12 +89,14 @@ public class GuildSetup {
 			
 			//Tickets category does not exist, so create it, and log it to the log channel
 			if(!ticketCategoryExists) {
-				logChannel.sendMessage("Preparing your Discord for ModBot...").queue();
+				logChannel.sendMessage("Preparing your Discord for ModBot...OK").queue();
 				Category cat = g.createCategory("Tickets").complete();
 				
 				GuildConfig.writeToConfig(g.getIdLong(), "ticketCategory", cat.getIdLong());
 			}
 		}
+		
+		JdaHandler.setLogChannel(logChannel);
 		
 		EmbedBuilder embed = new EmbedBuilder()
 				.setTitle("ModBot")
