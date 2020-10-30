@@ -1,6 +1,7 @@
 package nl.thedutchmc.modbot;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import javax.security.auth.login.LoginException;
@@ -14,6 +15,7 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.requests.restaction.ChannelAction;
 import nl.thedutchmc.modbot.guildConfig.GuildConfig;
 import nl.thedutchmc.modbot.listeners.MessageReceivedEventListener;
 
@@ -71,8 +73,22 @@ public class JdaHandler {
 			//Check if we have a config option for 'log-channel', if not, we havent made a channel for it yet
 			if(!GuildConfig.getConfigForGuild(g.getIdLong()).containsKey("log-channel")) {
 				
-				//Create a log channel since it does not exist, and write it to the configuration file
-				logChannel = g.createTextChannel("modbot-logs").complete();
+				//Create a ChannelAction to create the log channel
+				ChannelAction<TextChannel> logChannelCreateAction = g.createTextChannel("modbot-logs");
+				
+				//Create an EnumSet containing only the read channel permission
+				EnumSet<Permission> read = EnumSet.of(Permission.VIEW_CHANNEL);
+				
+				//Set the permissions on the channel.
+				//@Owner: Allow read
+				//@Everyone: Deny read
+				logChannelCreateAction.addMemberPermissionOverride(g.getOwnerIdLong(), read, null);
+				logChannelCreateAction.addRolePermissionOverride(g.getPublicRole().getIdLong(), null, read);
+				
+				//Create the channel
+				logChannel = logChannelCreateAction.complete();
+				
+				//Write the change to the configuration file.
 				GuildConfig.writeToConfig(g.getIdLong(), "log-channel", logChannel.getIdLong());
 			} else {
 				
@@ -95,10 +111,17 @@ public class JdaHandler {
 				//Tickets category does not exist, so create it, and log it to the log channel
 				if(!ticketCategoryExists) {
 					logChannel.sendMessage("Tickets category does not exist. Creating").queue();
-					g.createCategory("Tickets").complete();
+					Category cat = g.createCategory("Tickets").complete();
+					
+					GuildConfig.writeToConfig(g.getIdLong(), "ticketCategory", cat.getIdLong());
+					
 					logChannel.sendMessage("Done.").queue();
 				}
 			}
 		}
+	}
+	
+	public static TextChannel getLogChannel() {
+		return logChannel;
 	}
 }

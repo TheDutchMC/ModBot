@@ -8,6 +8,10 @@ import java.time.format.DateTimeFormatter;
 
 import javax.security.auth.login.LoginException;
 
+import nl.thedutchmc.modbot.commands.CommandManager;
+import nl.thedutchmc.modbot.commands.executors.ConfigCommandExecutor;
+import nl.thedutchmc.modbot.commands.executors.HelpCommandExecutor;
+import nl.thedutchmc.modbot.commands.executors.TicketCommandExecutor;
 import nl.thedutchmc.modbot.guildConfig.GuildConfig;
 
 public class ModBot {
@@ -49,6 +53,13 @@ public class ModBot {
 		}
 		
 		logInfo("JDA started.");
+		logInfo("Registering commands...");
+		
+		CommandManager.registerCommand("config").setExecutor(new ConfigCommandExecutor());
+		CommandManager.registerCommand("help").setExecutor(new HelpCommandExecutor());
+		CommandManager.registerCommand("ticket").setExecutor(new TicketCommandExecutor());
+		
+		logInfo("Commands registered.");
 		
 	}
 	
