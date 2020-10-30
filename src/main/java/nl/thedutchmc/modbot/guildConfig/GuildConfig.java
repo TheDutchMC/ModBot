@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -132,4 +133,10 @@ public class GuildConfig {
 			ModBot.logWarn("An IOException occured when updating the GuildConfig for Guild: " + id);
 		}
 	}
+	
+	//Get a list of all Guild IDs we have configured
+ 	public static List<Long> getGuildIds() {
+ 		List<Long> result = new LinkedList<Long>(configOptions.keySet());
+ 		return result;
+ 	}
 }

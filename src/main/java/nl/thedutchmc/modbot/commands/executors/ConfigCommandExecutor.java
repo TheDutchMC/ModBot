@@ -4,10 +4,13 @@ import java.awt.Color;
 import java.util.EnumSet;
 import java.util.List;
 
+import com.vdurmont.emoji.EmojiParser;
+
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.TextChannel;
+import nl.thedutchmc.modbot.JdaHandler;
 import nl.thedutchmc.modbot.commands.CommandExecutor;
 import nl.thedutchmc.modbot.commands.CommandInformation;
 import nl.thedutchmc.modbot.guildConfig.GuildConfig;
@@ -74,8 +77,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			
 			//Check if a value was passed to us
 			//If not, send the help menu for the config command and return.
-			if(args.length < 2) {
-				
+			if(args.length < 2) {	
 				information.getChannel().sendMessage(getConfigHelp().build()).queue();
 				return true;
 			}
@@ -85,18 +87,25 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			//After the changes have been made, inform the sender that this was done
 			if(args[1].equalsIgnoreCase("true")) {
 				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableTickets", true);
-				
 				information.getChannel().sendMessage("Configuration has been updated!").queue();
 			}
 			
 			//Value is false
 			//Edit the Guild's configuration file to reflect this command
 			//After the changes have been made, inform the sender that this was done
-			if(args[1].equalsIgnoreCase("false")) {
+			else if(args[1].equalsIgnoreCase("false")) {
 				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableTickets", false);
-				
 				information.getChannel().sendMessage("Configuration has been updated!").queue();
 			}
+			
+			//Neither true nor false was given as value
+			else {
+				information.getChannel().sendMessage("Invalid option! May only be **true** or **false**!").queue();
+				return true;
+			}
+			
+			//Log to the log channel.
+			JdaHandler.getLogChannel().sendMessage("The option **enableTickets** has been set to **" + args[1] + "** by **" + information.getAuthor().getName() + "** !").queue();
 		}
 		
 		//Configuration option to set the Moderator role for the current guild.
@@ -152,7 +161,117 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			//Inform the user of the change.
 			information.getChannel().sendMessage("The role " + moderatorRole.getAsMention() + " is now configured as the Moderator role!").queue();
 			
+			//Log to the log channel
+			JdaHandler.getLogChannel().sendMessage("The role **" + moderatorRole.getName() + "** has been configured as the Moderator role by **" + information.getAuthor().getName() + "**!").queue();
+			
 			return true;
+		}
+		
+		//Configuration option to set the emoji that should be used when reporting a message
+		//$mb config setReportEmoji <:emoji:>
+		if(args[0].equalsIgnoreCase("setReportEmoji")) {
+			
+			//Check if a value was passed to us
+			//If not, send the help menu for the config command and return.
+			if(args.length < 2) {
+				information.getChannel().sendMessage(getConfigHelp().build()).queue();
+				return true;
+			}
+			
+			//Parse the Emoji into text (Format: ':emoji:'), then remove the colons (Format: 'emoji')
+			String emojiParsed = EmojiParser.parseToAliases(args[1]).replaceAll(":", "");
+			
+			//Write the configuration change to the config.
+			long guildId = information.getGuild().getIdLong();
+			GuildConfig.writeToConfig(guildId, "reportEmoji", emojiParsed);
+			
+			//Inform the user of the change
+			information.getChannel().sendMessage("The report emoji has been changed to: ``:" +  emojiParsed + ":``!").queue();
+			
+			//Log to the log channel
+			JdaHandler.getLogChannel().sendMessage("The report emoji has been changed to ``:" + emojiParsed + ":`` by **" + information.getAuthor().getName() + "**!").queue();
+			
+			return true;
+		}
+		
+		if(args[0].equalsIgnoreCase("reportEmojiCount")) {
+			//Check if a value was passed to us
+			//If not, send the help menu for the config command and return.
+			if(args.length < 2) {
+				information.getChannel().sendMessage(getConfigHelp().build()).queue();
+				return true;
+			}
+			
+			//Check if the provided argument is not positive integer
+			//If this is the case, inform the user and return
+			if(args[1].matches("(0|[1-9]\\\\d*)")) {
+				information.getChannel().sendMessage("Provided value must be a positive integer!").queue();
+				return true;
+			}
+			
+			int count = Integer.valueOf(args[1]);
+			
+			//Write to config
+			GuildConfig.writeToConfig(information.getGuild().getIdLong(), "reportEmojiCount", count);
+			
+			//Inform the user of what we changed
+			information.getChannel().sendMessage("**reportEmojiCount** has been set to **" + count + "**!").queue();
+			
+			//Log to the logging channel
+			JdaHandler.getLogChannel().sendMessage("**reportEmojiCount** has been set to **" + count + "** by **" + information.getAuthor().getName() + "**!").queue();
+			
+			return true;
+		}
+		
+		if(args[0].equalsIgnoreCase("enableReportEmoji")) {
+			
+			//Check if a value was passed to us
+			//If not, send the help menu for the config command and return.
+			if(args.length < 2) {
+				information.getChannel().sendMessage(getConfigHelp().build()).queue();
+				return true;
+			}
+			
+			//The value is true
+			//Edit the Guild's configuration file to reflect this command
+			//After the changes have been made, inform the sender that this was done
+			if(args[1].equalsIgnoreCase("true")) {
+				
+				//Before we allow the option to be enabled, check if reportEmoji and reportEmojiCount are set.
+				boolean reportEmojiSet = GuildConfig.getConfigForGuild(information.getGuild().getIdLong()).containsKey("reportEmoji");
+				boolean reportEmojiCount = GuildConfig.getConfigForGuild(information.getGuild().getIdLong()).containsKey("reportEmojiCount");
+				
+				if(!reportEmojiSet) {
+					information.getChannel().sendMessage("The option **reportEmoji** has not been set. Cannot enable ReportEmoji!").queue();
+					return true;
+				}
+				
+				if(!reportEmojiCount) {
+					information.getChannel().sendMessage("The option **reportEmojiCount** has not been set. Cannot enable ReportEmoji!").queue();
+					return true;
+				}
+				
+				//Write to the config, inform the user, and write to the log channel.
+				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableReportEmoji", true);
+				information.getChannel().sendMessage("**enableReportEmoji** has been set to **true**").queue();
+				JdaHandler.getLogChannel().sendMessage("Option **enableReportEmoji** has been set to **true** by **" + information.getAuthor().getName() + "**!").queue();
+			}
+			
+			//Value is false
+			//Edit the Guild's configuration file to reflect this command
+			//After the changes have been made, inform the sender that this was done
+			//Also log to the log channel
+			else if(args[1].equalsIgnoreCase("false")) {
+				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableReportEmoji", false);
+				information.getChannel().sendMessage("**enableReportEmoji** has been set to **false**").queue();
+				JdaHandler.getLogChannel().sendMessage("Option **enableReportEmoji** has been set to **false** by **" + information.getAuthor().getName() + "**!").queue();
+			}
+			
+			//Neither true nor false was given as value
+			else {
+				information.getChannel().sendMessage("Invalid option! May only be **true** or **false**!").queue();
+				return true;
+			}
 		}
 		
 		return true;
@@ -165,6 +284,9 @@ public class ConfigCommandExecutor implements CommandExecutor {
 				.setColor(Color.cyan)
 				.appendDescription("**$mb config help** Shows you the configuration help page\n")
 				.appendDescription("**$mb config enableTickets <true/false>** Enable/Disable the Ticket system\n")
-				.appendDescription("**mb config moderator <@Moderator>** Set the Moderator role. **Note**: You should tag the Moderator role here!\n");
+				.appendDescription("**$mb config moderator <@Moderator>** Set the Moderator role. **Note**: You should tag the Moderator role here!\n")
+				.appendDescription("**$mb config reportEmojiCount <integer> ** Set the threshold for when a message should be deleted by ReportEmoji\n")
+				.appendDescription("**$mb config setReportEmoji <emoji>** Set the emoji to be watched by ReportEmoji\n")
+				.appendDescription("**$mb config enableReportEmoji <true/false>** Enable or disable ReportEmoji. To enable **setReportEmoji** and **reportEmojiCount** must be set.\n");
 	}
 }

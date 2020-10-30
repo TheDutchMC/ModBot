@@ -61,6 +61,9 @@ public class ModBot {
 		
 		logInfo("Commands registered.");
 		
+		
+		logInfo("Startup complete. Welcome to " + jda.getBotName() + ".");
+		
 	}
 	
 	public static void logInfo(Object log) {

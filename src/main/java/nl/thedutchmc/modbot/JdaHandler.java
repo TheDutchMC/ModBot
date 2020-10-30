@@ -1,27 +1,24 @@
 package nl.thedutchmc.modbot;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 
 import javax.security.auth.login.LoginException;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Category;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
-import net.dv8tion.jda.api.requests.restaction.ChannelAction;
-import nl.thedutchmc.modbot.guildConfig.GuildConfig;
+import nl.thedutchmc.modbot.listeners.GuildJoinEventListener;
+import nl.thedutchmc.modbot.listeners.GuildMessageReactionAddEventListener;
 import nl.thedutchmc.modbot.listeners.MessageReceivedEventListener;
 
 public class JdaHandler {
 
 	private static TextChannel logChannel;
+	private static JDA jda;
 	
 	public void load() throws LoginException {
 		
@@ -30,11 +27,18 @@ public class JdaHandler {
 		intents.add(GatewayIntent.GUILD_MESSAGES);
 		intents.add(GatewayIntent.GUILD_MESSAGE_REACTIONS);
 		
+		List<Object> listeners = new ArrayList<>();
+		listeners.add(new MessageReceivedEventListener());
+		listeners.add(new GuildMessageReactionAddEventListener());
+		listeners.add(new GuildJoinEventListener());
+		
 		//Log into Discord
 		JDA jda = JDABuilder.createDefault(ConfigurationHandler.getConfig().get("botToken"))
 					.enableIntents(intents)
 					.setActivity(Activity.playing("ModBot'ing"))
-					.addEventListeners(new MessageReceivedEventListener())
+					//.addEventListeners(new MessageReceivedEventListener())
+					//.addEventListeners(new GuildMessageReactionAddEventListener())
+					.addEventListeners(listeners.toArray())
 					.build();
 		
 		try {
@@ -43,10 +47,16 @@ public class JdaHandler {
 			e.printStackTrace();
 		}
 		
+		JdaHandler.jda = jda;
+		
+		GuildSetup setup = new GuildSetup();
+		
 		//Iterate over all Guilds the bot is connected to
 		for(Guild g : jda.getGuilds()) {
-			
-			//Create a config file. If one already exists, nothing happens
+			setup.setupGuild(g);
+		}
+		
+		/*	//Create a config file. If one already exists, nothing happens
 			GuildConfig.createConfig(g.getIdLong());
 			
 			//Get the Bot user
@@ -84,6 +94,9 @@ public class JdaHandler {
 				//@Everyone: Deny read
 				logChannelCreateAction.addMemberPermissionOverride(g.getOwnerIdLong(), read, null);
 				logChannelCreateAction.addRolePermissionOverride(g.getPublicRole().getIdLong(), null, read);
+			
+				//Set the channel description
+				logChannelCreateAction.setTopic("ModBot Log Chanel - ** DO NOT REMOVE **");
 				
 				//Create the channel
 				logChannel = logChannelCreateAction.complete();
@@ -118,10 +131,14 @@ public class JdaHandler {
 					logChannel.sendMessage("Done.").queue();
 				}
 			}
-		}
+		}*/
 	}
 	
 	public static TextChannel getLogChannel() {
 		return logChannel;
+	}
+	
+	public String getBotName() {
+		return jda.getSelfUser().getName();
 	}
 }
