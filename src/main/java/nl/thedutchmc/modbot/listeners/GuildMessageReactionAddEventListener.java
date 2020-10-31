@@ -84,7 +84,7 @@ public class GuildMessageReactionAddEventListener extends ListenerAdapter {
 						+ "You may open a ticket with **$ticket** if you feel this is not correct.").queue();
 				
 				//Log to the logging channel
-				JdaHandler.getLogChannel().sendMessage("Message ``" + m.getContentDisplay() + "`` by **" + m.getAuthor().getName() + "** has been deleted using ReportEmoji").queue();
+				JdaHandler.getLogChannel(event.getGuild()).sendMessage("Message ``" + m.getContentDisplay() + "`` by **" + m.getAuthor().getName() + "** has been deleted using ReportEmoji").queue();
 				
 				//Lastly, delete the message
 				m.delete().queue();

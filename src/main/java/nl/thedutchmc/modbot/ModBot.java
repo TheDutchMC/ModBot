@@ -8,12 +8,16 @@ import java.time.format.DateTimeFormatter;
 
 import javax.security.auth.login.LoginException;
 
+//import org.springframework.boot.SpringApplication;
+//import org.springframework.boot.autoconfigure.SpringBootApplication;
+
 import nl.thedutchmc.modbot.commands.CommandManager;
 import nl.thedutchmc.modbot.commands.executors.ConfigCommandExecutor;
 import nl.thedutchmc.modbot.commands.executors.HelpCommandExecutor;
 import nl.thedutchmc.modbot.commands.executors.TicketCommandExecutor;
 import nl.thedutchmc.modbot.guildConfig.GuildConfig;
 
+//@SpringBootApplication
 public class ModBot {
 
 	public static void main(String[] args) {
@@ -60,7 +64,11 @@ public class ModBot {
 		CommandManager.registerCommand("ticket").setExecutor(new TicketCommandExecutor());
 		
 		logInfo("Commands registered.");
+		logInfo("Starting Spring Boot Webserver...");
 		
+		//SpringApplication.run(ModBot.class, args);
+		
+		logInfo("Webserver started.");
 		
 		logInfo("Startup complete. Welcome to " + jda.getBotName() + ".");
 		

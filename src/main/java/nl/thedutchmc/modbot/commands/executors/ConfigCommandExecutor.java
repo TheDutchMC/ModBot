@@ -105,7 +105,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			}
 			
 			//Log to the log channel.
-			JdaHandler.getLogChannel().sendMessage("The option **enableTickets** has been set to **" + args[1] + "** by **" + information.getAuthor().getName() + "** !").queue();
+			JdaHandler.getLogChannel(information.getGuild()).sendMessage("The option **enableTickets** has been set to **" + args[1] + "** by **" + information.getAuthor().getName() + "** !").queue();
 		}
 		
 		//Configuration option to set the Moderator role for the current guild.
@@ -166,7 +166,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			information.getChannel().sendMessage("The role " + moderatorRole.getAsMention() + " is now configured as the Moderator role!").queue();
 			
 			//Log to the log channel
-			JdaHandler.getLogChannel().sendMessage("The role **" + moderatorRole.getName() + "** has been configured as the Moderator role by **" + information.getAuthor().getName() + "**!").queue();
+			JdaHandler.getLogChannel(information.getGuild()).sendMessage("The role **" + moderatorRole.getName() + "** has been configured as the Moderator role by **" + information.getAuthor().getName() + "**!").queue();
 			
 			return true;
 		}
@@ -193,7 +193,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			information.getChannel().sendMessage("The report emoji has been changed to: ``:" +  emojiParsed + ":``!").queue();
 			
 			//Log to the log channel
-			JdaHandler.getLogChannel().sendMessage("The report emoji has been changed to ``:" + emojiParsed + ":`` by **" + information.getAuthor().getName() + "**!").queue();
+			JdaHandler.getLogChannel(information.getGuild()).sendMessage("The report emoji has been changed to ``:" + emojiParsed + ":`` by **" + information.getAuthor().getName() + "**!").queue();
 			
 			return true;
 		}
@@ -222,7 +222,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			information.getChannel().sendMessage("**reportEmojiCount** has been set to **" + count + "**!").queue();
 			
 			//Log to the logging channel
-			JdaHandler.getLogChannel().sendMessage("**reportEmojiCount** has been set to **" + count + "** by **" + information.getAuthor().getName() + "**!").queue();
+			JdaHandler.getLogChannel(information.getGuild()).sendMessage("**reportEmojiCount** has been set to **" + count + "** by **" + information.getAuthor().getName() + "**!").queue();
 			
 			return true;
 		}
@@ -258,7 +258,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 				//Write to the config, inform the user, and write to the log channel.
 				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableReportEmoji", true);
 				information.getChannel().sendMessage("**enableReportEmoji** has been set to **true**").queue();
-				JdaHandler.getLogChannel().sendMessage("Option **enableReportEmoji** has been set to **true** by **" + information.getAuthor().getName() + "**!").queue();
+				JdaHandler.getLogChannel(information.getGuild()).sendMessage("Option **enableReportEmoji** has been set to **true** by **" + information.getAuthor().getName() + "**!").queue();
 			}
 			
 			//Value is false
@@ -268,7 +268,7 @@ public class ConfigCommandExecutor implements CommandExecutor {
 			else if(args[1].equalsIgnoreCase("false")) {
 				GuildConfig.writeToConfig(information.getGuild().getIdLong(), "enableReportEmoji", false);
 				information.getChannel().sendMessage("**enableReportEmoji** has been set to **false**").queue();
-				JdaHandler.getLogChannel().sendMessage("Option **enableReportEmoji** has been set to **false** by **" + information.getAuthor().getName() + "**!").queue();
+				JdaHandler.getLogChannel(information.getGuild()).sendMessage("Option **enableReportEmoji** has been set to **false** by **" + information.getAuthor().getName() + "**!").queue();
 			}
 			
 			//Neither true nor false was given as value

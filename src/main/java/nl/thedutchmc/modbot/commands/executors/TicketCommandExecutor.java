@@ -246,7 +246,7 @@ public class TicketCommandExecutor implements CommandExecutor {
 				currentChannel.delete().queue();
 				
 				//Log to the log channel
-				JdaHandler.getLogChannel().sendMessage("Ticket **" + channelName + "** has been removed by **" + information.getAuthor().getName() + "**!").queue();
+				JdaHandler.getLogChannel(information.getGuild()).sendMessage("Ticket **" + channelName + "** has been removed by **" + information.getAuthor().getName() + "**!").queue();
 				
 				return true;
 			}

@@ -3,12 +3,21 @@ plugins {
     id 'application'
 	id 'eclipse'
     id "com.github.johnrengelman.shadow" version "6.1.0"
+    
+    //Webinterface
+   	//id 'com.vaadin' version '0.14.3.7'
+	//id 'org.springframework.boot' version '2.2.4.RELEASE'
+	//id 'io.spring.dependency-management' version '1.0.9.RELEASE'
 }
 
 repositories {
     jcenter()
     mavenCentral()
 }
+
+//ext {
+//	set('vaadinVersion', "14.3.7")
+//}
 
 dependencies {
     implementation 'com.google.guava:guava:28.0-jre'
@@ -19,8 +28,20 @@ dependencies {
     
     compile group: 'org.json', name: 'json', version: '20200518'
    	compile group: 'com.vdurmont', name: 'emoji-java', version: '5.1.1'
-    
+   	
+   	//Webinteface
+   	//implementation('com.vaadin:vaadin-spring-boot-starter')   
 }
+
+//dependencyManagement {
+//	imports {
+//		mavenBom "com.vaadin:vaadin-bom:${vaadinVersion}"
+//	}
+//}
+
+//vaadin {
+//	pnpmEnable = true
+//}
 
 application {
     // Define the main class for the application.

@@ -11,13 +11,13 @@ import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import nl.thedutchmc.modbot.guildConfig.GuildConfig;
 import nl.thedutchmc.modbot.listeners.GuildJoinEventListener;
 import nl.thedutchmc.modbot.listeners.GuildMessageReactionAddEventListener;
 import nl.thedutchmc.modbot.listeners.MessageReceivedEventListener;
 
 public class JdaHandler {
 
-	private static TextChannel logChannel;
 	private static JDA jda;
 	
 	public void load() throws LoginException {
@@ -57,15 +57,14 @@ public class JdaHandler {
 		}
 	}
 	
-	public static TextChannel getLogChannel() {
-		return logChannel;
+	public static TextChannel getLogChannel(Guild g) {
+		long channelId = (long) GuildConfig.getConfigForGuild(g.getIdLong()).get("log-channel");
+		TextChannel c = g.getTextChannelById(channelId);
+		
+		return c;
 	}
 	
 	public String getBotName() {
 		return jda.getSelfUser().getName();
-	}
-	
-	public static void setLogChannel(TextChannel c) {
-		JdaHandler.logChannel = c;
 	}
 }

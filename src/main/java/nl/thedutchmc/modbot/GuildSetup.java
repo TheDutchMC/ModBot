@@ -95,9 +95,7 @@ public class GuildSetup {
 				GuildConfig.writeToConfig(g.getIdLong(), "ticketCategory", cat.getIdLong());
 			}
 		}
-		
-		JdaHandler.setLogChannel(logChannel);
-		
+				
 		EmbedBuilder embed = new EmbedBuilder()
 				.setTitle("ModBot")
 				.setColor(Color.cyan)
